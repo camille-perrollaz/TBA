@@ -42,15 +42,15 @@ class Game:
         self.rooms.append(swamp)
         castle = Room("Castle", "dans un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
         self.rooms.append(castle)
-
+        
         # Create exits for rooms
 
-        forest.exits = {"N" : cave, "E" : tower, "S" : castle, "O" : None}
-        tower.exits = {"N" : cottage, "E" : None, "S" : swamp, "O" : forest}
-        cave.exits = {"N" : None, "E" : cottage, "S" : forest, "O" : None}
-        cottage.exits = {"N" : None, "E" : None, "S" : tower, "O" : cave}
-        swamp.exits = {"N" : tower, "E" : None, "S" : None, "O" : castle}
-        castle.exits = {"N" : forest, "E" : swamp, "S" : None, "O" : None}
+        forest.exits = {"N": cave, "E": None, "S": castle, "O": None}
+        tower.exits = {"N": cottage, "E": None, "S": None, "O": None}
+        cave.exits = {"N": None, "E": cottage, "S": forest, "O": None}
+        cottage.exits = {"N": None, "E": None, "S": tower, "O": cave}
+        swamp.exits = {"N": tower, "E": None, "S": None, "O": castle}
+        castle.exits = {"N": forest, "E": swamp, "S": None, "O": None}
 
         # Setup player and starting room
 
@@ -67,11 +67,15 @@ class Game:
             self.process_command(input("> "))
         return None
 
-    # Process the command entered by the player
+        # Process the command entered by the player
     def process_command(self, command_string) -> None:
 
-        # Split the command string into a list of words
-        list_of_words = command_string.split(" ")
+        # Split the command string into a list of words (ignore extra spaces)
+        list_of_words = command_string.split()
+        
+        # If the command is empty (player just pressed Enter), do nothing
+        if not list_of_words:
+            return
 
         command_word = list_of_words[0]
 
@@ -89,7 +93,6 @@ class Game:
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
         print(self.player.current_room.get_long_description())
-    
 
 def main():
     # Create a game object and play the game
