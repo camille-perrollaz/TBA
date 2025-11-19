@@ -30,32 +30,43 @@ class Game:
         
         # Setup rooms
 
-        forest = Room("Forest", "une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres.")
-        self.rooms.append(forest)
-        tower = Room("Tower", "une immense tour en pierre qui s'élève au dessus des nuages.")
-        self.rooms.append(tower)
-        cave = Room("Cave", "une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
-        self.rooms.append(cave)
-        cottage = Room("Cottage", "un petit chalet pittoresque avec un toit de chaume. Une épaisse fumée verte sort de la cheminée.")
-        self.rooms.append(cottage)
-        swamp = Room("Swamp", "un marécage sombre et ténébreux. L'eau bouillonne, les abords sont vaseux.")
-        self.rooms.append(swamp)
-        castle = Room("Castle", "un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
-        self.rooms.append(castle)
+        vestibule = Room("Vestibule", "Tu te tiens dans le vestibule, le cœur encore battant. Plus tôt, tu errais dans la forêt quand un grand manoir a attiré ton regard. Par curiosité, tu y es entré… et la porte s’est refermée brusquement derrière toi. L’air y est lourd et stagnant, et déjà tu sens que cet endroit cache des secrets mystérieux.")
+        self.rooms.append(vestibule)
+        archives = Room("Les Archives", "La bibliothèque est plongée dans la pénombre ; les livres jonchent le sol dans un désordre total, et une odeur d’humidité imprègne l’air.")
+        self.rooms.append(archives)
+        salle_oeil = Room("Salle de l’Œil", "Un immense porche se dresse devant toi, et la porte entrouverte laisse juste assez d’espace pour apercevoir un œil qui t’observe dans l’ombre.")
+        self.rooms.append(salle_oeil)
+        laboratoire = Room("Laboratoire", "Le laboratoire est en désordre : des fioles brisées jonchent le sol, où se mêlent des résidus de potions et des matières non identifiées. Une forte odeur de produits chimiques flotte encore dans l’air.")
+        self.rooms.append(laboratoire)
+        chapelle = Room("Chapelle", "Une vieille chapelle en bois, usée et marquée par le temps, abrite en son centre un coffre mystérieux.")
+        self.rooms.append(chapelle)
+        chambre = Room("Une chambre", "La chambre semble figée dans le temps : un vieux piano poussiéreux trône dans un coin, tandis que des meubles usés sont recouverts de larges toiles d’araignées.")
+        self.rooms.append(chambre)
+        salon_depeceur = Room("Salon ", "Il est plongé dans la pénombre, sent l’encens. Les fauteuils rouges absorbent la lumière, et les ornements de bronze projettent des ombres tremblantes.")
+        self.rooms.append(salon_depeceur)
+        crypte = Room("Crypte", "Un souterrain humide éclairé par des lanternes, où le sol est jonché de débris et de pierres tombées.")
+        self.rooms.append(crypte)
+        cellule = Room("Cellule du Silence", "Une pièce minuscule avec une large porte d'échappatoire verrouillée, par laquelle s’échappe un filet de brume venant de l’extérieur.")
+        self.rooms.append(cellule)
+
+
         
         # Create exits for rooms
 
-        forest.exits = {"N": cave, "E": None, "S": castle, "O": None}
-        tower.exits = {"N": cottage, "E": None, "S": None, "O": None}
-        cave.exits = {"N": None, "E": cottage, "S": forest, "O": None}
-        cottage.exits = {"N": None, "E": None, "S": tower, "O": cave}
-        swamp.exits = {"N": tower, "E": None, "S": None, "O": castle}
-        castle.exits = {"N": forest, "E": swamp, "S": None, "O": None}
+        vestibule.exits = {"haut": chambre, "bas": crypte, "est": archives, "ouest": salon_depeceur}
+        archives.exits = {"ouest": vestibule, "nord": salle_oeil, "haut":laboratoire}
+        salle_oeil.exits = {"sud": archives, "est": laboratoire}
+        laboratoire.exits = {"ouest": salle_oeil, "haut": chapelle, "bas" : archives}
+        chapelle.exits = {"bas": laboratoire, "ouest": chambre}
+        chambre.exits = {"bas": vestibule, "est": chapelle}
+        salon_depeceur.exits = {"est": vestibule}
+        crypte.exits = {"haut": vestibule, "est": cellule}
+        cellule.exits = {"ouest": crypte}
 
         # Setup player and starting room
 
         self.player = Player(input("\nEntrez votre nom: "))
-        self.player.current_room = swamp
+        self.player.current_room = vestibule
 
     # Play the game
     def play(self):
