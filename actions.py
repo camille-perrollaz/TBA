@@ -50,15 +50,26 @@ class Actions:
             command_word = list_of_words[0]
             print(MSG1.format(command_word=command_word))
             return False
-        direction = list_of_words[1].lower()
-        if direction in ["N", "NORD", "Nord", "nord"]: direction = "nord"
-        if direction in ["S", "SUD", "Sud", "sud"]: direction = "sud"
-        if direction in ["E", "EST", "Est", "est"]: direction = "est"
-        if direction in ["O", "OUEST", "Ouest", "ouest"]: direction = "ouest"
-        if direction in ["U", "UP", "Up", "up"]: direction = "haut"
-        if direction in ["D", "DOWN", "Down", "down"]: direction = "bas"
-        return game.player.move(direction)
+        input_direction = list_of_words[1].upper()  # garder majuscules pour l'affichage
+        direction_map = {
+        "N": "nord", "NORD": "nord",
+        "S": "sud", "SUD": "sud",
+        "E": "est", "EST": "est",
+        "O": "ouest", "OUEST": "ouest",
+        "U": "haut", "UP": "haut",
+        "D": "bas", "DOWN": "bas"
+        }
+        input_direction = list_of_words[1].upper()
+        direction = direction_map.get(input_direction)
 
+        # si la direction est invalide ou qu'il n'y a pas de sortie
+        if not direction or player.current_room.exits.get(direction) is None:
+            print(f"Direction '{list_of_words[1]}' non reconnue.\n")
+            return False
+
+        player.current_room = player.current_room.exits[direction]
+        print(player.current_room.get_long_description())
+        return True
 
     def quit(game, list_of_words, number_of_parameters):
         """

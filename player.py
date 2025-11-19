@@ -9,7 +9,7 @@ class Player():
     # Define the move method.
     
     def move(self, direction):
-        next_room = self.current_room.exits.get(direction)
+        next_room = self.current_room.exits[direction]
         # If the next room is None, print an error message and return False.
         if next_room is None:
             print("\nAucune porte dans cette direction !\n")
