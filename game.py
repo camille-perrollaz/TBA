@@ -72,8 +72,6 @@ class Game:
 
         # Split the command string into a list of words (ignore extra spaces)
         list_of_words = command_string.split()
-        
-        # If the command is empty (player just pressed Enter), do nothing
         if not list_of_words:
             return
 
