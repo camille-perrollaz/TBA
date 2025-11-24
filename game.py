@@ -53,15 +53,15 @@ class Game:
         
         # Create exits for rooms
 
-        vestibule.exits = {"haut": chambre, "bas": crypte, "est": archives, "ouest": salon_depeceur}
-        archives.exits = {"ouest": vestibule, "nord": salle_oeil, "haut":laboratoire}
-        salle_oeil.exits = {"sud": archives, "est": laboratoire}
-        laboratoire.exits = {"ouest": salle_oeil, "haut": chapelle, "bas" : archives}
-        chapelle.exits = {"bas": laboratoire, "ouest": chambre}
-        chambre.exits = {"bas": vestibule, "est": chapelle}
-        salon_depeceur.exits = {"est": vestibule}
-        crypte.exits = {"haut": vestibule, "est": cellule}
-        cellule.exits = {"ouest": crypte}
+        vestibule.exits = {"U": chambre, "D": crypte, "E": archives, "O": salon_depeceur}
+        archives.exits = {"O": vestibule, "N": salle_oeil, "U":laboratoire}
+        salle_oeil.exits = {"S": archives, "E": laboratoire}
+        laboratoire.exits = {"O": salle_oeil, "U": chapelle, "D" : archives}
+        chapelle.exits = {"D": laboratoire, "O": chambre}
+        chambre.exits = {"D": vestibule, "E": chapelle}
+        salon_depeceur.exits = {"E": vestibule}
+        crypte.exits = {"U": vestibule, "E": cellule}
+        cellule.exits = {"O": crypte}
 
         # Setup player and starting room
 

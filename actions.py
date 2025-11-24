@@ -46,28 +46,31 @@ class Actions:
         """
         player = game.player
         l = len(list_of_words)
+        # If the number of parameters is incorrect, print an error message and return False.
         if l != number_of_parameters + 1:
             command_word = list_of_words[0]
             print(MSG1.format(command_word=command_word))
             return False
-        input_direction = list_of_words[1].upper()  # garder majuscules pour l'affichage
+
+        input_direction = list_of_words[1].strip().upper()
         direction_map = {
-        "N": "nord", "NORD": "nord",
-        "S": "sud", "SUD": "sud",
-        "E": "est", "EST": "est",
-        "O": "ouest", "OUEST": "ouest",
-        "U": "haut", "UP": "haut",
-        "D": "bas", "DOWN": "bas"
+        "N": "N", "NORD": "N",
+        "S": "S", "SUD": "S",
+        "E": "E", "EST": "E",
+        "O": "O", "OUEST": "O",
+        "U": "U", "UP": "U", "HAUT": "U",
+        "D": "D", "DOWN": "D", "BAS": "D"
         }
-        input_direction = list_of_words[1].upper()
+
         direction = direction_map.get(input_direction)
 
-        # si la direction est invalide ou qu'il n'y a pas de sortie
         if not direction or player.current_room.exits.get(direction) is None:
             print(f"Direction '{list_of_words[1]}' non reconnue.\n")
             return False
 
+        
         player.current_room = player.current_room.exits[direction]
+        
         print(player.current_room.get_long_description())
         return True
 
