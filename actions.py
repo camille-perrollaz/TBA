@@ -63,16 +63,17 @@ class Actions:
         }
 
         direction = direction_map.get(input_direction)
-
-        if not direction or player.current_room.exits.get(direction) is None:
-            print(f"Direction '{list_of_words[1]}' non reconnue.\n")
+        if not direction:
+            print(f"\nCommande '{list_of_words[1]}' non reconnue.\n")
             return False
 
-        
-        player.current_room = player.current_room.exits[direction]
-        
-        print(player.current_room.get_long_description())
-        return True
+        next_room = player.current_room.exits.get(direction)
+        if not next_room:
+            print("\nIl n'y a pas de porte dans cette direction !\n")
+            return False
+
+        return player.move(direction)
+
 
     def quit(game, list_of_words, number_of_parameters):
         """
@@ -152,3 +153,20 @@ class Actions:
             print("\t- " + str(command))
         print()
         return True
+    
+    def show_history(game, list_of_words, number_of_parameters):
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+        print(game.player.get_history())
+        return True
+    
+    def go_back(game, list_of_words, number_of_parameters):
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+        return game.player.back()

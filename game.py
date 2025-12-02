@@ -25,28 +25,28 @@ class Game:
         self.commands["help"] = help
         quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
         self.commands["quit"] = quit
-        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O)", Actions.go, 1)
+        go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, D, U)", Actions.go, 1)
         self.commands["go"] = go
         
         # Setup rooms
 
-        vestibule = Room("Vestibule", "Tu te tiens dans le vestibule, le cœur encore battant. Plus tôt, tu errais dans la forêt quand un grand manoir a attiré ton regard. Par curiosité, tu y es entré… et la porte s’est refermée brusquement derrière toi. L’air y est lourd et stagnant, et déjà tu sens que cet endroit cache des secrets mystérieux.")
+        vestibule = Room("Vestibule", "un vestibule sombre et poussiéreux, ses murs sont couverts de toiles d’araignée. Plus tôt, tu errais dans la forêt quand un grand manoir a attiré ton regard. Par curiosité, tu y es entré… et la porte s’est refermée brusquement derrière toi. L’air y est lourd et stagnant, et déjà tu sens que cet endroit cache des secrets mystérieux.")
         self.rooms.append(vestibule)
-        archives = Room("Les Archives", "La bibliothèque est plongée dans la pénombre ; les livres jonchent le sol dans un désordre total, et une odeur d’humidité imprègne l’air.")
+        archives = Room("Les Archives", "une bibliothèque plongée dans la pénombre. Les livres jonchent son sol dans un désordre total, et une odeur d’humidité imprègne l’air.")
         self.rooms.append(archives)
-        salle_oeil = Room("Salle de l’Œil", "Un immense porche se dresse devant toi, et la porte entrouverte laisse juste assez d’espace pour apercevoir un œil qui t’observe dans l’ombre.")
+        salle_oeil = Room("Salle de l’Œil", "une salle avec un immense porche menaçant. La porte entrouverte laisse juste assez d’espace pour apercevoir un œil qui t’observe dans l’ombre.")
         self.rooms.append(salle_oeil)
-        laboratoire = Room("Laboratoire", "Le laboratoire est en désordre : des fioles brisées jonchent le sol, où se mêlent des résidus de potions et des matières non identifiées. Une forte odeur de produits chimiques flotte encore dans l’air.")
+        laboratoire = Room("Laboratoire", "un laboratoire en désordre. Des fioles brisées jonchent le sol, où se mêlent des résidus de potions et des matières non identifiées. Une forte odeur de produits chimiques flotte encore dans l’air.")
         self.rooms.append(laboratoire)
-        chapelle = Room("Chapelle", "Une vieille chapelle en bois, usée et marquée par le temps, abrite en son centre un coffre mystérieux.")
+        chapelle = Room("Chapelle", "une vieille chapelle en bois, usée et marquée par le temps. Elle abrite en son centre un coffre mystérieux.")
         self.rooms.append(chapelle)
-        chambre = Room("Une chambre", "La chambre semble figée dans le temps : un vieux piano poussiéreux trône dans un coin, tandis que des meubles usés sont recouverts de larges toiles d’araignées.")
+        chambre = Room("Une chambre", "une chambre figée dans le temps. Un vieux piano poussiéreux trône dans un coin, tandis que des meubles usés sont recouverts de larges toiles d’araignées.")
         self.rooms.append(chambre)
-        salon_depeceur = Room("Salon ", "Il est plongé dans la pénombre, sent l’encens. Les fauteuils rouges absorbent la lumière, et les ornements de bronze projettent des ombres tremblantes.")
+        salon_depeceur = Room("Salon ", "un salon plongé dans la pénombre. Les fauteuils rouges absorbent la lumière, et les ornements de bronze projettent des ombres tremblantes.")
         self.rooms.append(salon_depeceur)
-        crypte = Room("Crypte", "Un souterrain humide éclairé par des lanternes, où le sol est jonché de débris et de pierres tombées.")
+        crypte = Room("Crypte", "un souterrain humide éclairé par des lanternes. Le sol est jonché de débris et de pierres tombées.")
         self.rooms.append(crypte)
-        cellule = Room("Cellule du Silence", "Une pièce minuscule avec une large porte d'échappatoire verrouillée, par laquelle s’échappe un filet de brume venant de l’extérieur.")
+        cellule = Room("Cellule du Silence", "une pièce minuscule avec une large porte d'échappatoire verrouillée. Un filet de brume venant de l’extérieur la traverse.")
         self.rooms.append(cellule)
 
 
@@ -67,6 +67,17 @@ class Game:
 
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = vestibule
+
+
+        
+        # Commande pour consulter l'historique
+        history_cmd = Command("history", " : afficher l'historique des pièces visitées", Actions.show_history, 0)
+        self.commands["history"] = history_cmd
+
+        # Commande pour revenir en arrière
+        back_cmd = Command("back", " : revenir en arrière", Actions.go_back, 0)
+        self.commands["back"] = back_cmd
+
 
     # Play the game
     def play(self):
@@ -101,8 +112,7 @@ class Game:
         print(f"\nBienvenue {self.player.name} dans ce jeu d'aventure !")
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
-        print(self.player.current_room.get_long_description())
-
+        print(f"\nVous êtes dans {self.player.current_room.description}\n\n{self.player.current_room.get_exit_string()}\n")
 def main():
     # Create a game object and play the game
     Game().play()
