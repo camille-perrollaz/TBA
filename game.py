@@ -140,7 +140,7 @@ class Game:
         #
         print(f"\nVous êtes dans {self.player.current_room.description}\n\n{self.player.current_room.get_exit_string()}\n")
 def main():
-    # Create a game object and play the game
+    # Create a game object and play 
     Game().play()
     
 
