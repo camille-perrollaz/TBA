@@ -6,6 +6,8 @@ from room import Room
 from player import Player
 from command import Command
 from actions import Actions
+from item import Item, Beamer
+from actions import charger_beamer, utiliser_beamer
 
 class Game:
 
@@ -27,6 +29,18 @@ class Game:
         self.commands["quit"] = quit
         go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O, D, U)", Actions.go, 1)
         self.commands["go"] = go
+        look = Command("look", " : observer la pièce", Actions.look, 0)
+        self.commands["look"] = look
+        take = Command("take", " <item> : prendre un objet", Actions.take, 1)
+        self.commands["take"] = take
+        drop = Command("drop", " <item> : déposer un objet", Actions.drop, 1)
+        self.commands["drop"] = drop
+        check = Command("check", " : vérifier l'inventaire", Actions.check, 0)
+        self.commands["check"] = check
+        self.commands["charger"] = Command("charger", " : charger le beamer", charger_beamer, 0)
+        self.commands["beamer"]  = Command("beamer", " : utiliser le beamer", utiliser_beamer, 0)
+
+
         
         # Setup rooms
 
@@ -48,7 +62,19 @@ class Game:
         self.rooms.append(crypte)
         cellule = Room("Cellule du Silence", "une pièce minuscule avec une large porte d'échappatoire verrouillée. Un filet de brume venant de l’extérieur la traverse.")
         self.rooms.append(cellule)
+        beamer = Beamer()
+                
 
+        #Setup objets
+        
+        vestibule.inventory["note"] = Item("Note", "Elle semble avoir été laissée pour le visiteur.", 0.1)
+        archives.inventory["fiole_acide"] = Item("Fiole d'acide sulfurique", "combiné avec d'autres fioles, cela pourrait être utile.", 0.1)
+        salle_oeil.inventory["fiole_vide"] = Item("Fiole de potion vide", "Oh, elle semble ne rien contenir pour le moment ; les araignées en ont fait leur maison.", 0.2)
+        laboratoire.inventory["alambic"] = Item("Alambic", "Outil permettant de faire des potions.", 10, portable=False)
+        chapelle.inventory["tabernacle"] = Item("Tabernacle", "Il semble hermétiquement fermé...", 20, portable=False)
+        chambre.inventory["coffre"] = Item("Coffre", "Il est fermé d’un cadenas en aluminium, trop abîmé pour qu’une clé soit utilisée.", 2, portable=False)
+        salon_depeceur.inventory["bague"] = Item("Bague", "Elle semble être là depuis un moment...", 0.5)
+        chapelle.inventory["beamer"] = beamer
 
         
         # Create exits for rooms

@@ -170,3 +170,68 @@ class Actions:
             print(MSG0.format(command_word=command_word))
             return False
         return game.player.back()
+
+    # Observer l’environnement
+    def look(game, list_of_words, number_of_parameters):
+        room = game.player.current_room  
+        print(room.get_inventory()) 
+
+    # Prendre
+    def take(game, list_of_words, number_of_parameters):
+        if len(list_of_words) < 2:
+            print("Vous devez préciser quel objet prendre.")
+            return
+
+        item_name = list_of_words[1].lower()
+        room = game.player.current_room
+        player = game.player
+
+        if item_name not in room.inventory:
+            print(f"L'objet '{item_name}' n'est pas dans la pièce.")
+            return
+
+        item = room.inventory[item_name]
+
+        current_weight = sum(i.weight for i in player.inventory.values())
+        if current_weight + item.weight > player.max_weight:
+            print(f"Vous ne pouvez pas prendre '{item_name}' (poids trop élevé).")
+            return
+
+        player.inventory[item_name] = room.inventory.pop(item_name)
+        print(f"Vous avez pris l'objet '{item_name}'.")
+
+    # Reposer un item    
+    def drop(game, list_of_words, number_of_parameters):
+        if len(list_of_words) < 2:
+            print("Vous devez préciser quel objet déposer.")
+            return
+
+        item_name = list_of_words[1].lower()
+        player = game.player
+        room = player.current_room
+
+        if item_name not in player.inventory:
+            print(f"L'objet '{item_name}' n'est pas dans l'inventaire.")
+            return
+
+        room.inventory[item_name] = player.inventory.pop(item_name)
+        print(f"Vous avez déposé l'objet '{item_name}'.")
+    
+    # Vérifier son inventaire
+
+    def check(game, list_of_words, number_of_parameters):
+        inv = game.player.inventory
+        if not inv:
+            print("Votre inventaire est vide.")
+            return
+        print("Vous disposez des items suivants :")
+        for item in inv.values():
+            print(f"    - {item}")
+
+# options beamer
+def charger_beamer(game, words, n):
+    print(game.player.charger_beamer())
+
+def utiliser_beamer(game, words, n):
+    print(game.player.use_beamer())
+

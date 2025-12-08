@@ -1,8 +1,11 @@
 class Player():
-    def __init__(self, name):
+    def __init__(self, name, max_weight=10):
         self.name = name
         self.current_room = None
         self.history = []
+        self.inventory = {}
+        # poids maximum que le joueur peut porter
+        self.max_weight = 10
 
     def _short_description(self, room):
         desc = room.get_long_description()
@@ -51,3 +54,42 @@ class Player():
         print(f"\nVous êtes dans {self.current_room.description}\n\n{self.current_room.get_exit_string()}\n")
         print(self.get_history())
         return True
+
+
+    def add_item(self, item):
+        self.inventory.append(item)
+
+    # Ajouter un inventaire au joueur
+    def get_inventory(self):
+        if not self.inventory:
+            return "Votre inventaire est vide."
+
+        text = "Vous disposez des items suivants :\n"
+        for item in self.inventory.values():
+            text += f"- {item}\n"
+        return text
+
+    
+    def charger_beamer(self):
+        if "beamer" not in self.inventory:
+            return "Tu n'as pas de beamer."
+        return self.inventory["beamer"].charge(self.current_room)
+
+    def use_beamer(self):
+        if "beamer" not in self.inventory:
+            return "Tu n'as pas de beamer."
+        room = self.inventory["beamer"].fire()
+        if room is None:
+            return "Le beamer n'est pas chargé."
+
+        if self.current_room is not None:
+            self.history.append(self.current_room)
+            
+        self.current_room = room
+
+        msg = f"Tu es téléporté dans {room.name}.\n\n"
+        msg += f"{self.current_room.description}\n\n"
+        msg += self.current_room.get_exit_string() + "\n"
+        msg += self.get_history()
+    
+        return msg
