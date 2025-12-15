@@ -8,9 +8,10 @@ from command import Command
 from actions import Actions
 from item import Item, Beamer
 from actions import charger_beamer, utiliser_beamer
+from character import Character, create_npcs
 
 class Game:
-
+    DEBUG = False
     # Constructor
     def __init__(self):
         self.finished = False
@@ -39,6 +40,9 @@ class Game:
         self.commands["check"] = check
         self.commands["charger"] = Command("charger", " : charger le beamer", charger_beamer, 0)
         self.commands["beamer"]  = Command("beamer", " : utiliser le beamer", utiliser_beamer, 0)
+        self.commands["talk"] = Command("talk", " <personnage> : parler à un personnage", Actions.talk,1)
+        self.commands["read"] = Command("read", " <item> : lire un objet dans votre inventaire", Actions.read, 0) 
+
 
 
         
@@ -68,13 +72,15 @@ class Game:
         #Setup objets
         
         vestibule.inventory["note"] = Item("Note", "Elle semble avoir été laissée pour le visiteur.", 0.1)
-        archives.inventory["fiole_acide"] = Item("Fiole d'acide sulfurique", "combiné avec d'autres fioles, cela pourrait être utile.", 0.1)
-        salle_oeil.inventory["fiole_vide"] = Item("Fiole de potion vide", "Oh, elle semble ne rien contenir pour le moment ; les araignées en ont fait leur maison.", 0.2)
-        laboratoire.inventory["alambic"] = Item("Alambic", "Outil permettant de faire des potions.", 10, portable=False)
+        archives.inventory["fiole"] = Item("Fiole d'acide sulfurique", "combiné avec d'autres fioles, cela pourrait être utile.", 0.1)
+        salle_oeil.inventory["fiole"] = Item("Fiole de potion vide", "Oh, elle semble ne rien contenir pour le moment ; les araignées en ont fait leur maison.", 0.2)
+        laboratoire.inventory["alambic"] = Item("Alambic", "Outil permettant de faire des potions.", 20, portable=False)
         chapelle.inventory["tabernacle"] = Item("Tabernacle", "Il semble hermétiquement fermé...", 20, portable=False)
         chambre.inventory["coffre"] = Item("Coffre", "Il est fermé d’un cadenas en aluminium, trop abîmé pour qu’une clé soit utilisée.", 2, portable=False)
         salon_depeceur.inventory["bague"] = Item("Bague", "Elle semble être là depuis un moment...", 0.5)
-        chapelle.inventory["beamer"] = beamer
+        chapelle.inventory["beamer"] = beamer 
+        
+        create_npcs(vestibule, laboratoire,crypte)
 
         
         # Create exits for rooms
@@ -109,11 +115,15 @@ class Game:
     def play(self):
         self.setup()
         self.print_welcome()
-        # Loop until the game is finished
+
         while not self.finished:
-            # Get the command from the player
+            # Commande du joueur
             self.process_command(input("> "))
-        return None
+
+            # Déplacement des PNJ (à chaque tour)
+            for room in self.rooms:
+                for character in list(room.characters.values()):  # list() crée une copie
+                    character.move()
 
         # Process the command entered by the player
     def process_command(self, command_string) -> None:

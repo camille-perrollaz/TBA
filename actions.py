@@ -228,6 +228,40 @@ class Actions:
         for item in inv.values():
             print(f"    - {item}")
 
+
+    def talk(game, list_of_words, number_of_parameters):
+    # Vérifier le nombre de paramètres
+        if len(list_of_words) != number_of_parameters + 1:
+            print(f"\nLa commande '{list_of_words[0]}' prend {number_of_parameters} paramètre(s).\n")
+            return False
+
+    # Nom saisi par le joueur
+        name_input = list_of_words[1].lower()
+        room = game.player.current_room
+
+    # Chercher le personnage dans la salle
+        for character in room.characters.values():
+            if name_input in character.name.lower():  # permet "chimiste" pour "Chimiste maudit"
+                character.get_msg()
+                return True
+
+        print("Il n'y a personne de ce nom ici.")
+        return False
+
+    def read(game, list_of_words, number_of_parameters):
+        if len(list_of_words) != 2:
+            print("La commande 'read' prend 1 seul paramètre.")
+            return False
+
+        item_name = list_of_words[1].lower()
+        if item_name not in game.player.inventory:
+            print(f"Vous n'avez pas '{item_name}' dans votre inventaire.")
+            return False
+
+        print(game.player.inventory[item_name].text)
+        return True
+
+
 # options beamer
 def charger_beamer(game, words, n):
     print(game.player.charger_beamer())

@@ -8,6 +8,7 @@ class Room:
         self.description = description
         self.exits = {}
         self.inventory = {}
+        self.characters={}
 
 
     # Define the get_exit method.
@@ -35,10 +36,14 @@ class Room:
 
     # Ajouter un inventaire aux lieux
     def get_inventory(self):
-        if not self.inventory:
-            return "Il n'y a rien ici."
-
-        text = "On voit :\n"
+        text = "On voit:\n"
+    
+        # Items
         for item in self.inventory.values():
             text += f"    - {item}\n"
+
+        # PNJ
+        for character in self.characters.values():
+            text += f"    - {character.name} : {character.description}\n"
+
         return text
