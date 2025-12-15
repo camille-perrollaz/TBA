@@ -36,14 +36,19 @@ class Room:
 
     # Ajouter un inventaire aux lieux
     def get_inventory(self):
-        text = "On voit:\n"
+        if not self.inventory and not self.characters:
+            return "Il n'y a rien ici"
+        text = ""
     
         # Items
-        for item in self.inventory.values():
-            text += f"    - {item}\n"
+        if self.inventory:
+            text += "On voit:\n"
+            for item in self.inventory.values():
+                text+= f"    - {item}\n"
 
         # PNJ
-        for character in self.characters.values():
-            text += f"    - {character.name} : {character.description}\n"
+        if self.characters:  
+            for character in self.characters.values():
+                text += f"    - {character.name} : {character.description}\n"
 
         return text

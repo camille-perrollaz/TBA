@@ -8,7 +8,7 @@ from command import Command
 from actions import Actions
 from item import Item, Beamer
 from actions import charger_beamer, utiliser_beamer
-from character import Character, create_npcs
+from character import Character
 
 class Game:
     DEBUG = False
@@ -72,15 +72,27 @@ class Game:
         #Setup objets
         
         vestibule.inventory["note"] = Item("Note", "Elle semble avoir été laissée pour le visiteur.", 0.1)
-        archives.inventory["fiole"] = Item("Fiole d'acide sulfurique", "combiné avec d'autres fioles, cela pourrait être utile.", 0.1)
-        salle_oeil.inventory["fiole"] = Item("Fiole de potion vide", "Oh, elle semble ne rien contenir pour le moment ; les araignées en ont fait leur maison.", 0.2)
+        archives.inventory["fiole_a"] = Item("Fiole d'acide sulfurique (fiole_a)", "combiné avec d'autres fioles, cela pourrait être utile.", 0.1)
+        salle_oeil.inventory["fiole_v"] = Item("Fiole de potion vide (fiole_v)", "Oh, elle semble ne rien contenir pour le moment ; les araignées en ont fait leur maison.", 0.2)
         laboratoire.inventory["alambic"] = Item("Alambic", "Outil permettant de faire des potions.", 20, portable=False)
         chapelle.inventory["tabernacle"] = Item("Tabernacle", "Il semble hermétiquement fermé...", 20, portable=False)
         chambre.inventory["coffre"] = Item("Coffre", "Il est fermé d’un cadenas en aluminium, trop abîmé pour qu’une clé soit utilisée.", 2, portable=False)
         salon_depeceur.inventory["bague"] = Item("Bague", "Elle semble être là depuis un moment...", 0.5)
         chapelle.inventory["beamer"] = beamer 
         
-        create_npcs(vestibule, laboratoire,crypte)
+        #--- NPC ---
+        sorcier = Character("Sorcier maléfique","Le sorcier maléfique se tient dans l’ombre...",crypte,["Seul celui qui retrouvera ma bague pourra prétendre à la récompense que je réserve."],mobile=False)
+        chimiste = Character("Chimiste maudit","Le chimiste semble avoir un message pour toi.",laboratoire,["Prisonnier, le maître de maison, par sa mystérieuse générosité, t'accorde une potion. Pour t'aider à t’échapper, tu devras retrouver les ingrédients et utiliser l’alambic."],mobile=False)
+        ame_perdue = Character("Ame perdue","Une silhouette translucide flotte lentement, prisonnière du manoir.", vestibule,["Où suis-je… ?","Je cherche la sortie depuis si longtemps…","Toi aussi, tu es piégé ici ?", "Fais attention, ce manoir est effrayant"], mobile=True)
+        ombre_sanguinaire = Character("Ombre Sanguinaire","Une silhouette noire flottante, aux yeux rouges qui brûlent comme du charbon, siffle des menaces glaciales. Son rire résonne dans les murs comme un écho de cauchemar.",laboratoire,["Je sens ton cœur battre… si vite… si faible…","Tu ne devrais pas être ici…","Regarde derrière toi… mais il n'y a rien… ou si ?","Ton souffle devient court… tu le sens ?"],mobile=True)
+
+
+        crypte.characters[sorcier.name] = sorcier
+        laboratoire.characters[chimiste.name] = chimiste
+        vestibule.characters["ame_perdue"] = ame_perdue
+        laboratoire.characters["ombre_sanguinaire"] = ombre_sanguinaire
+
+
 
         
         # Create exits for rooms
