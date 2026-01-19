@@ -1,5 +1,3 @@
-# Description: Game class
-
 # Import modules
 
 from room import Room
@@ -9,6 +7,9 @@ from actions import Actions
 from item import Item, Beamer
 from actions import charger_beamer, utiliser_beamer
 from character import Character
+#Rajouté 
+from quest import Quest
+#Fin Rajout
 
 class Game:
     DEBUG = False
@@ -18,6 +19,7 @@ class Game:
         self.rooms = []
         self.commands = {}
         self.player = None
+        self.exit_prompted = False
     
     # Setup the game
     def setup(self):
@@ -41,9 +43,15 @@ class Game:
         self.commands["charger"] = Command("charger", " : charger le beamer", charger_beamer, 0)
         self.commands["beamer"]  = Command("beamer", " : utiliser le beamer", utiliser_beamer, 0)
         self.commands["talk"] = Command("talk", " <personnage> : parler à un personnage", Actions.talk,1)
-        self.commands["read"] = Command("read", " <item> : lire un objet dans votre inventaire", Actions.read, 0) 
+        self.commands["read"] = Command("read", " <item> : lire un objet dans votre inventaire", Actions.read, 1) 
+        # Rajouté
 
-
+        self.commands["quests"] = Command("quests", " : afficher la liste des quêtes", Actions.quests, 0)
+        self.commands["quest"] = Command("quest", " <titre> : afficher les détails d'une quête", Actions.quest, 1)
+        self.commands["activate"] = Command("activate", " <titre> : activer une quête", Actions.activate, 1)
+        self.commands["rewards"] = Command("rewards", " : afficher vos récompenses", Actions.rewards, 0)
+        
+        # Fin rajouté 
 
         
         # Setup rooms
@@ -71,18 +79,18 @@ class Game:
 
         #Setup objets
         
-        vestibule.inventory["note"] = Item("Note", "Elle semble avoir été laissée pour le visiteur.", 0.1)
-        archives.inventory["fiole_a"] = Item("Fiole d'acide sulfurique (fiole_a)", "combiné avec d'autres fioles, cela pourrait être utile.", 0.1)
-        salle_oeil.inventory["fiole_v"] = Item("Fiole de potion vide (fiole_v)", "Oh, elle semble ne rien contenir pour le moment ; les araignées en ont fait leur maison.", 0.2)
+        vestibule.inventory["note"] = Item("Note", "Elle semble avoir été laissée pour le visiteur. Lis là.", 0.1, text ="Tu es désormais prisonnier de mon manoir. Si tu veux en ressortir vivant, il te faudra percer les énigmes qu’il renferme. Rien n’est laissé au hasard : chaque pièce compte, chaque rencontre a un sens. Explore le manoir dans son intégralité… Et lorsque tu posséderas l’objet que je garde secret, trouve le chemin vers la Cellule du Silence")
+        archives.inventory["fiole_a"] = Item("Fiole d'acide sulfurique (fiole_a)", "combiné avec d'autres fioles, cela pourrait faire des ravages.", 0.1)
+        salle_oeil.inventory["fiole_v"] = Item("Fiole de potion vide (fiole_v)", "Oh, elle semble ne rien contenir ; les araignées en ont fait leur maison.", 0.2)
         laboratoire.inventory["alambic"] = Item("Alambic", "Outil permettant de faire des potions.", 20, portable=False)
-        chapelle.inventory["tabernacle"] = Item("Tabernacle", "Il semble hermétiquement fermé...", 20, portable=False)
-        chambre.inventory["coffre"] = Item("Coffre", "Il est fermé d’un cadenas en aluminium, trop abîmé pour qu’une clé soit utilisée.", 2, portable=False)
-        salon_depeceur.inventory["bague"] = Item("Bague", "Elle semble être là depuis un moment...", 0.5)
+        chapelle.inventory["tabernacle"] = Item("Tabernacle", "Il semble hermétiquement fermé.", 20, portable=False)
+        chambre.inventory["coffre"] = Item("Coffre", "Il est fermé d’un cadenas en aluminium, trop abîmé pour être utilisé.", 2, portable=False)
+        salle_oeil.inventory["bague"] = Item("Bague", "Elle semble être là depuis un moment... Quelqu’un l’a peut-être égarée.", 0.5)
         chapelle.inventory["beamer"] = beamer 
         
         #--- NPC ---
         sorcier = Character("Sorcier maléfique","Le sorcier maléfique se tient dans l’ombre...",crypte,["Seul celui qui retrouvera ma bague pourra prétendre à la récompense que je réserve."],mobile=False)
-        chimiste = Character("Chimiste maudit","Le chimiste semble avoir un message pour toi.",laboratoire,["Prisonnier, le maître de maison, par sa mystérieuse générosité, t'accorde une potion. Pour t'aider à t’échapper, tu devras retrouver les ingrédients et utiliser l’alambic."],mobile=False)
+        chimiste = Character("Chimiste maudit","Le chimiste semble avoir un message pour toi.",laboratoire,["Prisonnier, disparais avant que je ne t’empoisonne. Tu n’es pas le bienvenu en ces lieux."],mobile=False)
         ame_perdue = Character("Ame perdue","Une silhouette translucide flotte lentement, prisonnière du manoir.", vestibule,["Où suis-je… ?","Je cherche la sortie depuis si longtemps…","Toi aussi, tu es piégé ici ?", "Fais attention, ce manoir est effrayant"], mobile=True)
         ombre_sanguinaire = Character("Ombre Sanguinaire","Une silhouette noire flottante, aux yeux rouges qui brûlent comme du charbon, siffle des menaces glaciales. Son rire résonne dans les murs comme un écho de cauchemar.",laboratoire,["Je sens ton cœur battre… si vite… si faible…","Tu ne devrais pas être ici…","Regarde derrière toi… mais il n'y a rien… ou si ?","Ton souffle devient court… tu le sens ?"],mobile=True)
 
@@ -112,6 +120,10 @@ class Game:
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = vestibule
 
+        # Rajouté 
+        self._setup_quests()  
+        # Fin rajout
+
 
         
         # Commande pour consulter l'historique
@@ -122,15 +134,59 @@ class Game:
         back_cmd = Command("back", " : revenir en arrière", Actions.go_back, 0)
         self.commands["back"] = back_cmd
 
+    # Rajouté 
+    
+    def _setup_quests(self):
+        """Initialize all quests."""
 
-    # Play the game
+        exploration_quest = Quest(
+            title="Grand Explorateur",
+            description="Explorez tous les lieux de ce manoir mystérieux.",
+            objectives=["Visiter Vestibule" , "Visiter Les Archives", "Visiter Salle de l’Œil", "Visiter Laboratoire", "Visiter Chapelle","Visiter Une chambre", "Visiter Salon ", "Visiter Crypte", "Visiter Cellule du Silence"], reward="Titre de Grand Explorateur")
+        
+        item_quest = Quest(
+            title="La Bague Perdue",
+            description="Retrouvez la bague perdue du magicien.",
+            objectives=["prendre bague"],
+            reward="L'accès à l’énigme du sorcier"
+        )
+
+        interaction_quest = Quest(
+            title="L'Énigme du Magicien",
+            description="Rapportez la bague au magicien, puis résolvez son énigme.",
+            objectives=["donner bague", "résoudre énigme"],
+            reward="Fiole de sang"
+        )
+        
+
+        # Add quests to player's quest manager
+        self.player.quest_manager.add_quest(exploration_quest)
+        self.player.quest_manager.add_quest(item_quest)
+        self.player.quest_manager.add_quest(interaction_quest)
+
+    #Fin rajout 
+
+    # Play the game # Rajouté 
     def play(self):
         self.setup()
         self.print_welcome()
 
         while not self.finished:
-            # Commande du joueur
             self.process_command(input("> "))
+
+    # reset du prompt si on quitte la cellule
+            if self.player.current_room.name != "Cellule du Silence":
+                self.exit_prompted = False
+
+            if self.loose():
+                self.finished = True
+                continue
+
+            if self.win():
+                print("\n🏆 Bravo ! Vous avez gagné !\n")
+                self.finished = True
+                continue
+
 
             # Déplacement des PNJ (à chaque tour)
             for room in self.rooms:
@@ -161,6 +217,58 @@ class Game:
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
         print(f"\nVous êtes dans {self.player.current_room.description}\n\n{self.player.current_room.get_exit_string()}\n")
+    
+    def win(self):
+        player = self.player
+
+    # conditions de base
+        in_cellule = player.current_room.name == "Cellule du Silence"
+        has_blood = "sang_coagule" in player.inventory
+
+    # condition : Grand Explorateur terminé
+        explore_quest = player.quest_manager.get_quest_by_title("Grand Explorateur")
+        explore_done = explore_quest is not None and explore_quest.is_completed
+
+    # si une condition manque -> pas de proposition
+        if not (in_cellule and has_blood and explore_done):
+            return False
+
+    # éviter de reposer la question en boucle
+        if getattr(self, "exit_prompted", False):
+            return False
+        self.exit_prompted = True
+
+        rep = input(
+            "\nVous avez réuni les conditions pour quitter le manoir.\n"
+            "Voulez-vous poser la fiole sur le socle et déverrouiller la porte finale ? (oui/non) > "
+        ).strip().lower()
+
+        if rep in ("oui", "o", "yes", "y"):
+            print("\n🔓 La porte s’ouvre lentement...\n")
+            print("🌟 FIN PARFAITE 🌟")
+            print(
+                "Vous quittez le manoir après avoir percé tous ses secrets.\n"
+                "Votre nom restera gravé dans ces murs.\n"
+                "🏆 Titre obtenu : Grand Survivant Du Manoir \n"
+            )
+            return True
+
+        print("\nVous reculez lentement. La porte reste scellée. Revenez si vous changer d'avis.\n")
+        return False
+
+
+    def loose(self):
+        player = self.player
+
+        if hasattr(player, "riddle_attempts_left"):
+            if not player.riddle_solved and player.riddle_attempts_left <= 0:
+                print("\n💀 Le sorcier rit. Trois erreurs. Le manoir se referme sur toi.")
+                print("💀 Tu as perdu.\n")
+                return True
+
+        return False
+
+
 def main():
     # Create a game object and play 
     Game().play()
@@ -168,3 +276,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

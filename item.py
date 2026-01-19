@@ -1,5 +1,5 @@
 class Item:
-    def __init__(self, name, description, weight, portable=True, text=""):
+    def __init__(self, name, description, weight, portable=True, text=None): # Rajouté
         self.name = name
         self.description = description
         self.weight = weight
@@ -11,7 +11,7 @@ class Item:
 
 class Beamer(Item):
     def __init__(self):
-        super().__init__("Beamer", "Permet de revenir dans une pièce déjà visitée.", 1)
+        super().__init__("Beamer", "Permet de revenir sur ces pas. (dans la pièce de chargement du beamer)", 1)
         self.charged_room = None
 
     def charge(self, room):
@@ -22,4 +22,5 @@ class Beamer(Item):
         if self.charged_room:
             return self.charged_room
         return None
+
 

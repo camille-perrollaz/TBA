@@ -1,11 +1,20 @@
+# Rajouté 
+from quest import QuestManager
+
 class Player():
     def __init__(self, name, max_weight=10):
         self.name = name
         self.current_room = None
         self.history = []
         self.inventory = {}
-        # poids maximum que le joueur peut porter
-        self.max_weight = 10
+        self.max_weight = 10 # Poids maximum que le joueur peut porter
+        self.move_count = 0
+        self.quest_manager = QuestManager(self)
+        self.rewards = [] # List to store earned rewards 
+        self.sorcier_ring_given = False
+        self.riddle_solved = False
+        self.riddle_attempts_left = 3
+# Fin Rajout
 
     def _short_description(self, room):
         desc = room.get_long_description()
@@ -31,7 +40,33 @@ class Player():
         print(f"\nVous êtes dans {self.current_room.description}\n\n{self.current_room.get_exit_string()}\n")
         # Afficher l’historique 
         print(self.get_history())
-        return True
+        
+        # Rajouté 
+
+        # Check room visit objectives
+        self.quest_manager.check_room_objectives(self.current_room.name)
+        # Increment move counter and check movement objectives
+        self.move_count += 1
+        self.quest_manager.check_counter_objectives("Se déplacer", self.move_count)
+        return True 
+        
+    def add_reward(self, reward):
+        if reward and reward not in self.rewards:
+            self.rewards.append(reward)
+            print(f"\n🎁 Vous avez obtenu: {reward}\n")
+
+    def show_rewards(self):
+        if not self.rewards:
+            print("\n🎁 Aucune récompense obtenue pour le moment.\n")
+        else:
+            print("\n🎁 Vos récompenses:")
+            for reward in self.rewards:
+                print(f"  • {reward}")
+            print()
+        
+        # Fin rajout 
+
+
 
 
     def get_history(self):

@@ -1,3 +1,4 @@
+from item import Item
 # Description: The actions module.
 
 # The actions module contains the functions that are called when a command is executed.
@@ -199,6 +200,8 @@ class Actions:
 
         player.inventory[item_name] = room.inventory.pop(item_name)
         print(f"Vous avez pris l'objet '{item_name}'.")
+        player.quest_manager.check_action_objectives("prendre", item_name)# Rajouté 
+
 
     # Reposer un item    
     def drop(game, list_of_words, number_of_parameters):
@@ -229,24 +232,82 @@ class Actions:
             print(f"    - {item}")
 
 
+
     def talk(game, list_of_words, number_of_parameters):
-    # Vérifier le nombre de paramètres
         if len(list_of_words) != number_of_parameters + 1:
             print(f"\nLa commande '{list_of_words[0]}' prend {number_of_parameters} paramètre(s).\n")
             return False
 
-    # Nom saisi par le joueur
         name_input = list_of_words[1].lower()
         room = game.player.current_room
+        player = game.player
 
-    # Chercher le personnage dans la salle
         for character in room.characters.values():
-            if name_input in character.name.lower():  # permet "chimiste" pour "Chimiste maudit"
+            if name_input in character.name.lower():
+
+            #  CAS SORCIER
+                if "sorcier" in character.name.lower():
+
+                # Message initial
+                    if not player.sorcier_ring_given and not player.riddle_solved:
+                        character.get_msg()
+
+                # 🔹 BAGUE NON DONNÉE
+                    if not player.sorcier_ring_given:
+                        if "bague" not in player.inventory:
+                            print("\nRetrouve ma bague perdue dans les profondeurs de ce manoir.\n")
+                            return True
+
+                        rep = input("\nVoulez-vous donner la bague au sorcier ? (oui/non) > ").lower()
+                        if rep in ("oui", "o", "yes", "y"):
+                            player.inventory.pop("bague")
+                            player.sorcier_ring_given = True
+                            player.quest_manager.check_action_objectives("donner", "bague")
+                            print("\nLe sorcier récupère sa bague. « Enfin… »\n")
+                        else:
+                            print("\n« Très bien. Reviens quand tu seras prêt. »\n")
+                        return True
+
+                # 🔹 ÉNIGME DÉJÀ RÉSOLUE
+                    if player.riddle_solved:
+                        print("\n« Tu as déjà prouvé ta valeur. Pars. »\n")
+                        return True
+
+                # 🔹 ÉNIGME
+                    print("\n« Pour te remercier, permets-moi de te soumettre à une énigme. Mais prends garde : trois erreurs, et je t’enfermerai ici pour l’éternité. Réfléchis bien…: »")
+                    print("Je marche, tu marches. Je m'arrête, tu t'arrêtes. Qui suis-je ?")
+                    print(f"(Il te reste {player.riddle_attempts_left} essai(s))")
+
+                    answer = input("> ").strip().lower()
+                    good = answer in ("ombre", "une ombre", "ton ombre", "une ombre")
+
+                    if not good:
+                        player.riddle_attempts_left -= 1
+                        print("\n« Faux. »\n")
+                        return True
+
+                # ✅ Bonne réponse
+                    player.riddle_solved = True
+                    print("\n« Correct ! Tu as l'esprit affûté. »")
+                    print("Le sorcier te remet une fiole de sang coagulé.\n")
+
+                    player.quest_manager.complete_objective("résoudre énigme")
+
+                    if "sang_coagule" not in player.inventory:
+                        player.inventory["sang_coagule"] = Item(
+                            "Sang coagulé", "Une fiole sombre et épaisse…", 0.2
+                        )
+                        player.quest_manager.check_action_objectives("obtenir", "sang_coagule")
+                    player.add_reward("Fiole de sang coagulé")
+                    return True
+
+            # PNJ normal
                 character.get_msg()
                 return True
 
         print("Il n'y a personne de ce nom ici.")
         return False
+
 
     def read(game, list_of_words, number_of_parameters):
         if len(list_of_words) != 2:
@@ -258,9 +319,76 @@ class Actions:
             print(f"Vous n'avez pas '{item_name}' dans votre inventaire.")
             return False
 
-        print(game.player.inventory[item_name].text)
+        item = game.player.inventory[item_name]
+        print(item.text) # Rajouté
         return True
 
+    # Rajouté: 
+    def quests(game, list_of_words, number_of_parameters):
+    # If the number of parameters is incorrect, print an error message and return False.
+        n = len(list_of_words)
+        if n != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+    # Show all quests
+        game.player.quest_manager.show_quests()
+        return True
+
+    def quest(game, list_of_words, number_of_parameters):
+        # If the number of parameters is incorrect, print an error message and return False.
+        n = len(list_of_words)
+        if n < number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        # Get the quest title from the list of words (join all words after command)
+        quest_title = " ".join(list_of_words[1:])
+
+        # Prepare current counter values to show progress
+        current_counts = {
+            "Se déplacer": game.player.move_count
+        }
+
+        # Show quest details
+        game.player.quest_manager.show_quest_details(quest_title, current_counts)
+        return True
+
+    def activate(game, list_of_words, number_of_parameters):
+        # If the number of parameters is incorrect, print an error message and return False.
+        n = len(list_of_words)
+        if n < number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        # Get the quest title from the list of words (join all words after command)
+        quest_title = " ".join(list_of_words[1:])
+
+        # Try to activate the quest
+        if game.player.quest_manager.activate_quest(quest_title):
+            return True
+
+        msg1 = f"\nImpossible d'activer la quête '{quest_title}'. "
+        msg2 = "Vérifiez le nom ou si elle n'est pas déjà active.\n"
+        print(msg1 + msg2)
+        # print(f"\nImpossible d'activer la quête '{quest_title}'. \
+        #             Vérifiez le nom ou si elle n'est pas déjà active.\n")
+        return False
+    def rewards(game, list_of_words, number_of_parameters):
+        # If the number of parameters is incorrect, print an error message and return False.
+        n = len(list_of_words)
+        if n != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        # Show all rewards
+        game.player.show_rewards()
+        return True
+    # Fin rajout 
 
 # options beamer
 def charger_beamer(game, words, n):
