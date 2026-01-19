@@ -28,7 +28,7 @@ class Game:
         self.exit_prompted = False
     
     # Setup the game
-    def setup(self):
+    def setup(self, player_name=None):
 
         # Setup commands
 
@@ -59,23 +59,23 @@ class Game:
         
         # Setup rooms
 
-        vestibule = Room("Vestibule", "un vestibule sombre et poussiéreux, ses murs sont couverts de toiles d’araignée. Plus tôt, tu errais dans la forêt quand un grand manoir a attiré ton regard. Par curiosité, tu y es entré… et la porte s’est refermée brusquement derrière toi. L’air y est lourd et stagnant, et déjà tu sens que cet endroit cache des secrets mystérieux.", image="images/vestibule.jpg")
+        vestibule = Room("Vestibule", "un vestibule sombre et poussiéreux, ses murs sont couverts de toiles d’araignée. Plus tôt, tu errais dans la forêt quand un grand manoir a attiré ton regard. Par curiosité, tu y es entré… et la porte s’est refermée brusquement derrière toi. L’air y est lourd et stagnant, et déjà tu sens que cet endroit cache des secrets mystérieux.", image="vestibule.png")
         self.rooms.append(vestibule)
-        archives = Room("Les Archives", "une bibliothèque plongée dans la pénombre. Les livres jonchent son sol dans un désordre total, et une odeur d’humidité imprègne l’air.")
+        archives = Room("Les Archives", "une bibliothèque plongée dans la pénombre. Les livres jonchent son sol dans un désordre total, et une odeur d’humidité imprègne l’air.", image="archives.png")
         self.rooms.append(archives)
-        salle_oeil = Room("Salle de l’Œil", "une salle avec un immense porche menaçant. La porte entrouverte laisse juste assez d’espace pour apercevoir un œil qui t’observe dans l’ombre.")
+        salle_oeil = Room("Salle de l’Œil", "une salle avec un immense porche menaçant. La porte entrouverte laisse juste assez d’espace pour apercevoir un œil qui t’observe dans l’ombre.", image="salle_oeil.png")
         self.rooms.append(salle_oeil)
-        laboratoire = Room("Laboratoire", "un laboratoire en désordre. Des fioles brisées jonchent le sol, où se mêlent des résidus de potions et des matières non identifiées. Une forte odeur de produits chimiques flotte encore dans l’air.")
+        laboratoire = Room("Laboratoire", "un laboratoire en désordre. Des fioles brisées jonchent le sol, où se mêlent des résidus de potions et des matières non identifiées. Une forte odeur de produits chimiques flotte encore dans l’air.", image="laboratoire.png")
         self.rooms.append(laboratoire)
-        chapelle = Room("Chapelle", "une vieille chapelle en bois, usée et marquée par le temps. Elle abrite en son centre un coffre mystérieux.")
+        chapelle = Room("Chapelle", "une vieille chapelle en bois, usée et marquée par le temps. Elle abrite en son centre un coffre mystérieux.", image="chapelle.png")
         self.rooms.append(chapelle)
-        chambre = Room("Une chambre", "une chambre figée dans le temps. Un vieux piano poussiéreux trône dans un coin, tandis que des meubles usés sont recouverts de larges toiles d’araignées.")
+        chambre = Room("Une chambre", "une chambre figée dans le temps. Un vieux piano poussiéreux trône dans un coin, tandis que des meubles usés sont recouverts de larges toiles d’araignées.", image="chambre.png")
         self.rooms.append(chambre)
-        salon_depeceur = Room("Salon ", "un salon plongé dans la pénombre. Les fauteuils rouges absorbent la lumière, et les ornements de bronze projettent des ombres tremblantes.")
+        salon_depeceur = Room("Salon ", "un salon plongé dans la pénombre. Les fauteuils rouges absorbent la lumière, et les ornements de bronze projettent des ombres tremblantes.", image="salon_depeceur.png")
         self.rooms.append(salon_depeceur)
-        crypte = Room("Crypte", "un souterrain humide éclairé par des lanternes. Le sol est jonché de débris et de pierres tombées.")
+        crypte = Room("Crypte", "un souterrain humide éclairé par des lanternes. Le sol est jonché de débris et de pierres tombées.", image="crypte.png")
         self.rooms.append(crypte)
-        cellule = Room("Cellule du Silence", "une pièce minuscule avec une large porte d'échappatoire verrouillée. Un filet de brume venant de l’extérieur la traverse.")
+        cellule = Room("Cellule du Silence", "une pièce minuscule avec une large porte d'échappatoire verrouillée. Un filet de brume venant de l’extérieur la traverse.", image="cellule.png")
         self.rooms.append(cellule)
         beamer = Beamer()
                 
@@ -120,7 +120,10 @@ class Game:
 
         # Setup player and starting room
 
-        self.player = Player(input("\nEntrez votre nom: "))
+        if player_name !="":
+            self.player = Player(player_name)
+        else:           
+            self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = vestibule
         self._setup_quests()  
 
