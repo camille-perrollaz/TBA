@@ -271,12 +271,25 @@ class Game:
         return False
     
     def ask(self, message: str) -> str:
-        try:
-            if getattr(self, "gui_root", None) is not None:
-                from tkinter import simpledialog
-                return simpledialog.askstring("Question", message, parent=self.gui_root) or ""
-        except Exception:
-            pass
+        if getattr(self, "gui_root", None) is not None:
+            from tkinter import simpledialog
+            root = self.gui_root
+            try:
+                root.lift()
+                root.attributes("-topmost", True)
+                root.focus_force()
+                root.update_idletasks()
+            except Exception:
+                pass
+
+            res = simpledialog.askstring("Question", message, parent=root)
+            try:
+                root.attributes("-topmost", False)
+            except Exception:
+                pass
+
+            return res or ""
+
         return input(message)
 
 
