@@ -490,8 +490,17 @@ class GameGUI(tk.Tk):
         for room in self.game.rooms:
             for character in list(room.characters.values()):
                 character.move()
+        
+        if self.game.player and self.game.player.current_room.name != "Cellule du Silence":
+            self.game.exit_prompted = False
 
+    # ✅ Vérifie lose / win en mode GUI (sinon la fin ne se déclenche jamais)
+        if self.game.loose():
+            self.game.finished = True
+        elif self.game.win():
+            self.game.finished = True
         # Update room image after command (in case player moved)
+        
         self._update_room_image()
         if self.game.finished:
             # Disable further input and schedule close (brief delay to show farewell)
