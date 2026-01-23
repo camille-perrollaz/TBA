@@ -271,33 +271,20 @@ class Game:
         return False
     
     def ask(self, message: str) -> str:
-    # GUI -> popup ; CLI -> input
+    # GUI -> ne jamais bloquer
         if getattr(self, "gui_root", None) is not None:
-            from tkinter import simpledialog
-
-            root = self.gui_root
             try:
-                root.deiconify()
-                root.lift()
-                root.focus_force()
-                root.attributes("-topmost", True)
-                root.update_idletasks()
-                root.update()
+                from tkinter import simpledialog
+                res = simpledialog.askstring(
+                    "Question",
+                    message,
+                    parent=self.gui_root
+                )
+                return (res or "").strip().lower()
             except Exception:
-                pass
-
-            try:
-                res = simpledialog.askstring("Question", message, parent=root)
-            finally:
-             # On enlève le topmost même si l'utilisateur annule
-                try:
-                    root.attributes("-topmost", False)
-                except Exception:
-                    pass
-
-            return (res or "").strip()
-
-        return input(message)
+                return ""
+    # CLI
+        return input(message).strip().lower()
 
 
 
