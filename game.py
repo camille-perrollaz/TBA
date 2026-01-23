@@ -61,9 +61,9 @@ class Game:
 
         vestibule = Room("Vestibule", "un vestibule sombre et poussiéreux, ses murs sont couverts de toiles d’araignée. Plus tôt, tu errais dans la forêt quand un grand manoir a attiré ton regard. Par curiosité, tu y es entré… et la porte s’est refermée brusquement derrière toi. L’air y est lourd et stagnant, et déjà tu sens que cet endroit cache des secrets mystérieux.", image="vestibule.png")
         self.rooms.append(vestibule)
-        archives = Room("Les Archives", "une bibliothèque plongée dans la pénombre. Les livres jonchent son sol dans un désordre total, et une odeur d’humidité imprègne l’air.", image="archives.png")
+        archives = Room("Les Archives", "les archives, plongées dans la pénombre. Les livres jonchent son sol dans un désordre total, et une odeur d’humidité imprègne l’air.", image="archives.png")
         self.rooms.append(archives)
-        salle_oeil = Room("Salle de l’Œil", "une salle avec un immense porche menaçant. La porte entrouverte laisse juste assez d’espace pour apercevoir un œil qui t’observe dans l’ombre.", image="salle_oeil.png")
+        salle_oeil = Room("Salle de l’Œil", "la salle d'oeil avec un immense porche menaçant. La porte entrouverte laisse juste assez d’espace pour apercevoir un œil qui t’observe dans l’ombre.", image="salle_oeil.png")
         self.rooms.append(salle_oeil)
         laboratoire = Room("Laboratoire", "un laboratoire en désordre. Des fioles brisées jonchent le sol, où se mêlent des résidus de potions et des matières non identifiées. Une forte odeur de produits chimiques flotte encore dans l’air.", image="laboratoire.png")
         self.rooms.append(laboratoire)
@@ -71,11 +71,11 @@ class Game:
         self.rooms.append(chapelle)
         chambre = Room("Une chambre", "une chambre figée dans le temps. Un vieux piano poussiéreux trône dans un coin, tandis que des meubles usés sont recouverts de larges toiles d’araignées.", image="chambre.png")
         self.rooms.append(chambre)
-        salon_depeceur = Room("Salon ", "un salon plongé dans la pénombre. Les fauteuils rouges absorbent la lumière, et les ornements de bronze projettent des ombres tremblantes.", image="salon_depeceur.png")
+        salon_depeceur = Room("Salon ", "un salon opressant. Les fauteuils rouges absorbent la lumière, et les ornements de bronze projettent des ombres tremblantes.", image="salon_depeceur.png")
         self.rooms.append(salon_depeceur)
-        crypte = Room("Crypte", "un souterrain humide éclairé par des lanternes. Le sol est jonché de débris et de pierres tombées.", image="crypte.png")
+        crypte = Room("Crypte", "une crypte humide éclairée par des lanternes. Le sol est jonché de débris et de pierres tombées.", image="crypte.png")
         self.rooms.append(crypte)
-        cellule = Room("Cellule du Silence", "une pièce minuscule avec une large porte d'échappatoire verrouillée. Un filet de brume venant de l’extérieur la traverse.", image="cellule.png")
+        cellule = Room("Cellule du Silence", "une cellule minuscule avec une large porte verrouillée d'une grille en fer. Un filet de brume venant de l’extérieur la traverse.", image="cellule.png")
         self.rooms.append(cellule)
         beamer = Beamer()
                 
@@ -109,9 +109,9 @@ class Game:
         # Create exits for rooms
 
         vestibule.exits = {"U": chambre, "D": crypte, "E": archives, "O": salon_depeceur}
-        archives.exits = {"O": vestibule, "N": salle_oeil, "U":laboratoire}
-        salle_oeil.exits = {"S": archives, "E": laboratoire}
-        laboratoire.exits = {"O": salle_oeil, "U": chapelle, "D" : archives}
+        archives.exits = {"O": vestibule, "N": laboratoire}
+        salle_oeil.exits = {"O": laboratoire}
+        laboratoire.exits = {"U": chapelle, "S" : archives}
         chapelle.exits = {"D": laboratoire, "O": chambre}
         chambre.exits = {"D": vestibule, "E": chapelle}
         salon_depeceur.exits = {"E": vestibule}
