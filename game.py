@@ -271,20 +271,31 @@ class Game:
         return False
     
     def ask(self, message: str) -> str:
-    # GUI -> ne jamais bloquer
+        # GUI -> popup au premier plan
         if getattr(self, "gui_root", None) is not None:
+            root = self.gui_root
             try:
-                from tkinter import simpledialog
-                res = simpledialog.askstring(
-                    "Question",
-                    message,
-                    parent=self.gui_root
-                )
-                return (res or "").strip().lower()
+                root.deiconify()
+                root.lift()
+                root.focus_force()
+                root.attributes("-topmost", True)
+                root.update_idletasks()
+                root.update()
             except Exception:
-                return ""
-    # CLI
-        return input(message).strip().lower()
+                pass
+
+            try:
+                res = simpledialog.askstring("Question", message, parent=root)
+            finally:
+                try:
+                    root.attributes("-topmost", False)
+                except Exception:
+                    pass
+
+            return (res or "").strip()
+
+        # CLI
+        return input(message).strip()
 
 
 
