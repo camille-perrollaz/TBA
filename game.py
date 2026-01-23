@@ -240,7 +240,7 @@ class Game:
             return False
         self.exit_prompted = True
 
-        rep = input(
+        rep = self.ask(
             "\nVous avez réuni les conditions pour quitter le manoir.\n"
             "Voulez-vous poser la fiole sur le socle et déverrouiller la porte finale ? (oui/non) > "
         ).strip().lower()
@@ -269,7 +269,15 @@ class Game:
                 return True
 
         return False
-
+    
+    def ask(self, message: str) -> str:
+        try:
+            if getattr(self, "gui_root", None) is not None:
+                from tkinter import simpledialog
+                return simpledialog.askstring("Question", message, parent=self.gui_root) or ""
+        except Exception:
+            pass
+        return input(message)
 
 
 class _StdoutRedirector:
@@ -301,6 +309,7 @@ class GameGUI(tk.Tk):
 
         # Underlying game logic instance
         self.game = Game()
+        self.game.gui_root = self
 
         # Ask player name via dialog (fallback to 'Joueur')
         name = simpledialog.askstring("Nom", "Entrez votre nom:", parent=self)

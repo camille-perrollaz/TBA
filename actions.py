@@ -258,7 +258,7 @@ class Actions:
                             print("\nRetrouve ma bague perdue dans les profondeurs de ce manoir.\n")
                             return True
 
-                        rep = input("\nVoulez-vous donner la bague au sorcier ? (oui/non) > ").lower()
+                        rep = game.ask("\nVoulez-vous donner la bague au sorcier ? (oui/non) > ").lower()
                         if rep in ("oui", "o", "yes", "y"):
                             player.inventory.pop("bague")
                             player.sorcier_ring_given = True
@@ -278,7 +278,7 @@ class Actions:
                     print("Je marche, tu marches. Je m'arrête, tu t'arrêtes. Qui suis-je ?")
                     print(f"(Il te reste {player.riddle_attempts_left} essai(s))")
 
-                    answer = input("> ").strip().lower()
+                    answer = game.ask("> ").strip().lower()
                     good = answer in ("ombre", "une ombre", "ton ombre", "une ombre")
 
                     if not good:
