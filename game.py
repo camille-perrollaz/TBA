@@ -111,7 +111,7 @@ class Game:
         vestibule.exits = {"U": chambre, "D": crypte, "E": archives, "O": salon_depeceur}
         archives.exits = {"O": vestibule, "N": laboratoire}
         salle_oeil.exits = {"O": laboratoire}
-        laboratoire.exits = {"U": chapelle, "S" : archives}
+        laboratoire.exits = {"U": chapelle, "S" : archives, "E": salle_oeil}
         chapelle.exits = {"D": laboratoire, "O": chambre}
         chambre.exits = {"D": vestibule, "E": chapelle}
         salon_depeceur.exits = {"E": vestibule}
