@@ -30,7 +30,7 @@ class Character:
 
             # ajouter le PNJ dans la nouvelle salle
             self.room = next_room
-            self.room.characters[self.name.lower()] = self
+            self.room.characters[self.name] = self
             return True
 
         return False

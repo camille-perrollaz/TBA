@@ -100,8 +100,8 @@ class Game:
 
         crypte.characters[sorcier.name] = sorcier
         laboratoire.characters[chimiste.name] = chimiste
-        vestibule.characters["ame_perdue"] = ame_perdue
-        laboratoire.characters["ombre_sanguinaire"] = ombre_sanguinaire
+        vestibule.characters[ame_perdue.name] = ame_perdue
+        laboratoire.characters[ombre_sanguinaire.name] = ombre_sanguinaire
 
 
 
@@ -458,6 +458,11 @@ class GameGUI(tk.Tk):
         # Echo the command in output area
         print(f"> {command}\n")
         self.game.process_command(command)
+        # ✅ Déplacement des PNJ à chaque commande (mode GUI)
+        for room in self.game.rooms:
+            for character in list(room.characters.values()):
+                character.move()
+
         # Update room image after command (in case player moved)
         self._update_room_image()
         if self.game.finished:
